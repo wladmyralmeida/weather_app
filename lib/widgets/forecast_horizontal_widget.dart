@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:weather_application/main.dart';
 import 'package:weather_application/model/weather.dart';
 import 'package:weather_application/widgets/value_tile.dart';
 
@@ -23,9 +24,9 @@ class ForecastHorizontal extends StatelessWidget {
         shrinkWrap: true,
         itemCount: this.weathers.length,
         separatorBuilder: (context, index) => Divider(
-              height: 100,
-              color: Colors.white,
-            ),
+          height: 100,
+          color: Colors.white,
+        ),
         padding: EdgeInsets.only(left: 10, right: 10),
         itemBuilder: (context, index) {
           final item = this.weathers[index];
@@ -33,11 +34,11 @@ class ForecastHorizontal extends StatelessWidget {
             padding: const EdgeInsets.only(left: 10, right: 10),
             child: Center(
                 child: ValueTile(
-              DateFormat('E, ha').format(
-                  DateTime.fromMillisecondsSinceEpoch(item.time * 1000)),
-              '${item.temperature}°',
-              iconData: item.getIconData(),
-            )),
+                  DateFormat('E, ha').format(
+                      DateTime.fromMillisecondsSinceEpoch(item.time * 1000)),
+                  '${item.temperature.as(AppStateContainer.of(context).temperatureUnit).round()}°',
+                  iconData: item.getIconData(),
+                )),
           );
         },
       ),

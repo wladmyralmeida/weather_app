@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_application/main.dart';
 import 'package:weather_application/model/weather.dart';
-import 'package:weather_application/widgets/value_tile.dart';
+import 'package:weather_application/widgets/content_header.dart';
 
-/// Renders a horizontal scrolling list of weather conditions
-/// Used to show forecast
-/// Shows DateTime, Weather Condition icon and Temperature
-class ForecastHorizontal extends StatelessWidget {
-  const ForecastHorizontal({
+class ForecastScreen extends StatelessWidget {
+  const ForecastScreen({
     Key key,
     @required this.weathers,
   }) : super(key: key);
@@ -33,7 +30,7 @@ class ForecastHorizontal extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(left: 10, right: 10),
             child: Center(
-                child: ValueTile(
+                child: ContentHeader(
                   DateFormat('E, ha').format(
                       DateTime.fromMillisecondsSinceEpoch(item.time * 1000)),
                   '${item.temperature.as(AppStateContainer.of(context).temperatureUnit).round()}°',

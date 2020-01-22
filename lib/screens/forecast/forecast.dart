@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weather_application/bloc/weather_bloc.dart';
 import 'package:weather_application/model/weather.dart';
-import 'package:weather_application/service/weather_service.dart';
 import 'package:weather_application/widgets/forecast_horizontal_widget.dart';
 
 class ForecastScreen extends StatefulWidget {
@@ -13,12 +12,12 @@ class _ForecastScreenState extends State<ForecastScreen> {
   final bloc = WeatherBloc();
 
   void showWeather() async {
-    var data = WeatherService.getWeather("London");
+    var data = bloc.weatherRepository.getWeather("London");
     print(data.toString());
   }
 
   Future<void> _onRefresh() {
-    return bloc.fetch("London");
+    return bloc.weatherRepository.getWeather("London");
   }
 
   @override
@@ -33,7 +32,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
       body: Container(
         alignment: Alignment.center,
         child: StreamBuilder(
-          stream: bloc.stream,
+          stream: bloc.state,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Text("Não foi possível buscar os carros");

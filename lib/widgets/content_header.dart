@@ -19,8 +19,7 @@ class ContentHeader extends StatelessWidget {
           this.label,
           style: TextStyle(
               color: _theme
-                  .accentColor
-                  .withAlpha(80)),
+                  .accentColor),
         ),
         SizedBox(
           height: 5,

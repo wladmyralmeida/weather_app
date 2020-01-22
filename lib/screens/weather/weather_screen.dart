@@ -7,11 +7,14 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:weather_application/bloc/weather_bloc.dart';
 import 'package:weather_application/bloc/weather_event.dart';
 import 'package:weather_application/bloc/weather_state.dart';
+import 'package:weather_application/model/weather.dart';
 import 'package:weather_application/repository/weather_repository.dart';
+import 'package:weather_application/screens/forecast/forecast_screen.dart';
 import 'package:weather_application/service/weather_service.dart';
 import 'package:weather_application/api/keys.dart' as utils;
 import 'package:weather_application/utils/navigator_shortcut.dart';
-import 'package:weather_application/widgets/weather_widget.dart';
+import 'package:weather_application/utils/temperatures.dart';
+import 'package:weather_application/widgets/current_conditions.dart';
 
 enum OptionsMenu { changeCity }
 
@@ -26,11 +29,14 @@ class WeatherScreen extends StatefulWidget {
 
 class _WeatherScreenState extends State<WeatherScreen>
     with TickerProviderStateMixin {
-  WeatherBloc _weatherBloc;
-  String _cityName = 'silverstone';
+  static WeatherBloc _weatherBloc;
   AnimationController _fadeController;
   Animation<double> _fadeAnimation;
   ThemeData _theme;
+  Future<Weather> _tempCity1;
+  Future<Weather> _tempCity2;
+  Future<Weather> _tempCity3;
+  Future<Weather> _tempCity4;
 
   @override
   void initState() {
@@ -38,6 +44,10 @@ class _WeatherScreenState extends State<WeatherScreen>
     _weatherBloc = WeatherBloc(weatherRepository: widget.weatherRepository);
     _fetchWeatherWithLocation().catchError((error) {
       _fetchWeatherWithCity();
+      _tempCity1 = _weatherBloc.weatherRepository.getWeather("Silverstone");
+      _tempCity2 = _weatherBloc.weatherRepository.getWeather("São Paulo");
+      _tempCity3 = _weatherBloc.weatherRepository.getWeather("Melbourne");
+      _tempCity4 = _weatherBloc.weatherRepository.getWeather("Monte Carlo");
     });
     _fadeController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
@@ -59,24 +69,10 @@ class _WeatherScreenState extends State<WeatherScreen>
               Text(
                 DateFormat('dd, MMMM, yyyy').format(DateTime.now()),
                 style: TextStyle(
-                    color: _theme.accentColor.withAlpha(80), fontSize: 14),
+                    color: _theme.accentColor, fontSize: 14),
               )
             ],
           ),
-          actions: <Widget>[
-            PopupMenuButton<OptionsMenu>(
-                child: Icon(
-                  Icons.more_vert,
-                  color: _theme.accentColor,
-                ),
-                onSelected: this._onOptionMenuItemSelected,
-                itemBuilder: (context) => <PopupMenuEntry<OptionsMenu>>[
-                      PopupMenuItem<OptionsMenu>(
-                        value: OptionsMenu.changeCity,
-                        child: Text("Mudar Cidade"),
-                      ),
-                    ])
-          ],
         ),
         backgroundColor: Colors.white,
         body: Material(
@@ -89,12 +85,23 @@ class _WeatherScreenState extends State<WeatherScreen>
                   bloc: _weatherBloc,
                   builder: (_, WeatherState weatherState) {
                     if (weatherState is WeatherLoaded) {
-                      this._cityName = weatherState.weather.cityName;
+                      /*this._cityName = weatherState.weather.cityName;
+                      this._tempCity = weatherState.weather.temperature;*/
                       _fadeController.reset();
                       _fadeController.forward();
                       return SingleChildScrollView(
-                        child: WeatherWidget(
-                          weather: weatherState.weather,
+                        child: GestureDetector(
+                          onTap: (){
+                            push(context, ForecastScreen(weathers: weatherState.weather.forecast,));
+                          },
+                          child: Column(
+                            children: <Widget>[
+                              CurrentConditions(cityName: "Silverstone", tempCity: _tempCity1),
+                              CurrentConditions(cityName: "São Paulo", tempCity: _tempCity2),
+                              CurrentConditions(cityName: "Melbourne", tempCity: _tempCity3),
+                              CurrentConditions(cityName: "Monte Carlo", tempCity: _tempCity4),
+                            ],
+                          )
                         ),
                       );
                     } else if (weatherState is WeatherError ||
@@ -104,7 +111,7 @@ class _WeatherScreenState extends State<WeatherScreen>
                       if (weatherState is WeatherError) {
                         if (weatherState.errorCode == 404) {
                           errorText =
-                              'Temos dificuldade em obter tempo para $_cityName';
+                              'Temos dificuldade em obter tempo para a cidade desejada';
                         }
                       }
                       return Column(
@@ -145,64 +152,14 @@ class _WeatherScreenState extends State<WeatherScreen>
         ));
   }
 
-  void _showCityChangeDialog() {
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: Text('Mudar Cidade', style: TextStyle(color: Colors.black)),
-            actions: <Widget>[
-              FlatButton(
-                child: Text(
-                  'Ok',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                ),
-                onPressed: () {
-                  _fetchWeatherWithCity();
-                  pop(context);
-                },
-              ),
-            ],
-            content: TextField(
-              autofocus: true,
-              onChanged: (text) {
-                _cityName = text;
-              },
-              decoration: InputDecoration(
-                  hintText: 'Nome da sua cidade',
-                  hintStyle: TextStyle(color: Colors.black),
-                  suffixIcon: GestureDetector(
-                    onTap: () {
-                      _fetchWeatherWithLocation().catchError((error) {
-                        _fetchWeatherWithCity();
-                      });
-                      Navigator.of(context).pop();
-                    },
-                    child: Icon(
-                      Icons.my_location,
-                      color: Colors.black,
-                      size: 16,
-                    ),
-                  )),
-              style: TextStyle(color: Colors.black),
-              cursorColor: Colors.black,
-            ),
-          );
-        });
-  }
-
-  _onOptionMenuItemSelected(OptionsMenu item) {
-    switch (item) {
-      case OptionsMenu.changeCity:
-        this._showCityChangeDialog();
-        break;
-    }
-  }
-
   _fetchWeatherWithCity() {
-    _weatherBloc.dispatch(FetchWeather(cityName: _cityName));
+    _weatherBloc.dispatch(FetchWeather(cityName: "Silvertone"));
+    _weatherBloc.dispatch(FetchWeather(cityName: "São Paulo"));
+    _weatherBloc.dispatch(FetchWeather(cityName: "Melbourne"));
+    _weatherBloc.dispatch(FetchWeather(cityName: "Monte Carlo"));
+
+
+
   }
 
   _fetchWeatherWithLocation() async {

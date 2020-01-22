@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:weather_application/main.dart';
 import 'package:weather_application/model/weather.dart';
+import 'package:weather_application/utils/temperatures.dart';
 
 class CurrentConditions extends StatelessWidget {
-  final Weather weather;
-  const CurrentConditions({Key key, this.weather}) : super(key: key);
+  final String cityName;
+  final Future<Weather> tempCity;
+
+  const CurrentConditions({Key key, @required this.cityName, @required this.tempCity}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +17,7 @@ class CurrentConditions extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(
-          this.weather.cityName.toUpperCase(),
+          cityName.toUpperCase() ?? "",
           style: TextStyle(
               fontWeight: FontWeight.w900,
               letterSpacing: 5,
@@ -22,7 +25,7 @@ class CurrentConditions extends StatelessWidget {
               fontSize: 22),
         ),
         Text(
-          '${this.weather.temperature.as(AppStateContainer.of(context).temperatureUnit).round()}°',
+          tempCity.toString() ?? "",
           style: TextStyle(
               fontSize: 80,
               fontWeight: FontWeight.w100,

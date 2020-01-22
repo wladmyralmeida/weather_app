@@ -14,30 +14,36 @@ class ForecastScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 70,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        itemCount: this.weathers.length,
-        separatorBuilder: (context, index) => Divider(
-          height: 100,
-          color: Colors.white,
+
+    ThemeData _theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: _theme.primaryColor,
+      appBar: AppBar(title: Text("Forecast Screen"),),
+      body: Container(
+        child: ListView.separated(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: this.weathers.length,
+          separatorBuilder: (context, index) => Divider(
+            height: 15,
+            color: Colors.white,
+          ),
+          padding: EdgeInsets.only(left: 10, right: 10),
+          itemBuilder: (context, index) {
+            final item = this.weathers[index];
+            return Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Center(
+                  child: ContentHeader(
+                    DateFormat('E, ha').format(
+                        DateTime.fromMillisecondsSinceEpoch(item.time * 1000)),
+                    '${item.temperature.as(AppStateContainer.of(context).temperatureUnit).round()}°',
+                    iconData: item.getIconData(),
+                  )),
+            );
+          },
         ),
-        padding: EdgeInsets.only(left: 10, right: 10),
-        itemBuilder: (context, index) {
-          final item = this.weathers[index];
-          return Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            child: Center(
-                child: ContentHeader(
-                  DateFormat('E, ha').format(
-                      DateTime.fromMillisecondsSinceEpoch(item.time * 1000)),
-                  '${item.temperature.as(AppStateContainer.of(context).temperatureUnit).round()}°',
-                  iconData: item.getIconData(),
-                )),
-          );
-        },
       ),
     );
   }

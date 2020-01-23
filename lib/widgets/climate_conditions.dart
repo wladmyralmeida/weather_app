@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:weather_application/main.dart';
 import 'package:weather_application/model/weather.dart';
-import 'package:weather_application/utils/temperatures.dart';
 
-class CurrentConditions extends StatelessWidget {
-  final String cityName;
-  final Future<Weather> tempCity;
-
-  const CurrentConditions({Key key, @required this.cityName, @required this.tempCity}) : super(key: key);
+class ClimateConditions extends StatelessWidget {
+  final Weather weather;
+  const ClimateConditions({Key key, @required this.weather}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +14,7 @@ class CurrentConditions extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(
-          cityName.toUpperCase() ?? "",
+          this.weather.cityName.toUpperCase() ?? "",
           style: TextStyle(
               fontWeight: FontWeight.w900,
               letterSpacing: 5,
@@ -25,19 +22,15 @@ class CurrentConditions extends StatelessWidget {
               fontSize: 22),
         ),
         Text(
-          tempCity.toString() ?? "",
+          '${this.weather.temperature.as(AppStateContainer.of(context).temperatureUnit).round()}°' ?? "",
           style: TextStyle(
               fontSize: 80,
               fontWeight: FontWeight.w100,
               color: _theme.accentColor),
         ),
-        Padding(
-          child: Divider(
-            color:
-            _theme.accentColor,
-          ),
-          padding: EdgeInsets.all(10),
-        ),
+        SizedBox(height: 10.0,),
+        Text("Clique acima para mais informações:)", style: TextStyle(color: _theme.accentColor),),
+        SizedBox(height: 25.0,),
       ],
     );
   }

@@ -29,7 +29,7 @@ class ForecastScreen extends StatelessWidget {
             height: 15,
             color: Colors.white,
           ),
-          padding: EdgeInsets.only(left: 10, right: 10),
+          padding: EdgeInsets.only(top: 15.0, left: 10, right: 10),
           itemBuilder: (context, index) {
             final item = this.weathers[index];
             return Padding(
